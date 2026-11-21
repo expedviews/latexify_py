@@ -124,23 +124,30 @@ class FunctionCodegen(ast.NodeVisitor):
 
     def visit_If(self, node: ast.If) -> str:
         """Visit an If node."""
-        latex = r"\left\{ \begin{array}{ll} "
+        rows: list[str] = []
 
-        current_stmt: ast.stmt = node
+        current_stmt: ast.stmt | None = node
 
         while isinstance(current_stmt, ast.If):
-            if len(current_stmt.body) != 1 or len(current_stmt.orelse) != 1:
+            if len(current_stmt.body) != 1 or len(current_stmt.orelse) > 1:
                 raise exceptions.LatexifySyntaxError(
                     "Multiple statements are not supported in If nodes."
                 )
 
             cond_latex = self._expression_codegen.visit(current_stmt.test)
             true_latex = self.visit(current_stmt.body[0])
-            latex += true_latex + r", & \mathrm{if} \ " + cond_latex + r" \\ "
-            current_stmt = current_stmt.orelse[0]
+            rows.append(true_latex + r", & \mathrm{if} \ " + cond_latex)
+            # An if/elif chain without a trailing else ends with empty orelse.
+            current_stmt = current_stmt.orelse[0] if current_stmt.orelse else None
 
-        latex += self.visit(current_stmt)
-        return latex + r", & \mathrm{otherwise} \end{array} \right."
+        if current_stmt is not None:
+            rows.append(self.visit(current_stmt) + r", & \mathrm{otherwise}")
+
+        return (
+            r"\left\{ \begin{array}{ll} "
+            + r" \\ ".join(rows)
+            + r" \end{array} \right."
+        )
 
     def visit_Match(self, node: ast.Match) -> str:
         """Visit a Match node"""
