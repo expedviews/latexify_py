@@ -32,6 +32,27 @@ def test_sinc() -> None:
     integration_utils.check_function(sinc, latex)
 
 
+def test_if_elif_without_else() -> None:
+    def fn(x):
+        if x < 0:
+            return -1
+        elif x == 0:
+            return 0
+        elif x > 0:
+            return 1
+
+    integration_utils.check_function(
+        fn,
+        (
+            r"\mathrm{fn}(x) = \left\{ \begin{array}{ll}"
+            r" -1, & \mathrm{if} \ x < 0 \\"
+            r" 0, & \mathrm{if} \ x = 0 \\"
+            r" 1, & \mathrm{if} \ x > 0"
+            r" \end{array} \right."
+        ),
+    )
+
+
 def test_x_times_beta() -> None:
     def xtimesbeta(x, beta):
         return x * beta
