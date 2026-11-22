@@ -248,3 +248,15 @@ def test_multiple_constants_allowed() -> None:
 
     latex = r"\mathrm{solve}(x) = x"
     integration_utils.check_function(solve, latex)
+
+
+def test_identifiers_math_symbol_keyword() -> None:
+    def foo(lambda_):
+        return lambda_ + 1
+
+    integration_utils.check_function(
+        foo,
+        r"f(\lambda) = \lambda + 1",
+        identifiers={"foo": "f", "lambda_": "lambda"},
+        use_math_symbols=True,
+    )
