@@ -19,6 +19,22 @@ def test_invalid_mapping() -> None:
         IdentifierReplacer({"foo": "def"})
 
 
+def test_math_symbol_keyword_value() -> None:
+    # Keywords naming supported math symbols are allowed as replacement values.
+    replacer = IdentifierReplacer({"lambda_": "lambda"})
+    source = "def f(lambda_):\n    return lambda_"
+    tree = ast.parse(source)
+    visited = replacer.visit(tree)
+    assert isinstance(visited, ast.Module)
+    fn = visited.body[0]
+    assert isinstance(fn, ast.FunctionDef)
+    assert fn.args.args[0].arg == "lambda"
+    ret = fn.body[0]
+    assert isinstance(ret, ast.Return)
+    assert isinstance(ret.value, ast.Name)
+    assert ret.value.id == "lambda"
+
+
 def test_name_replaced() -> None:
     source = ast.Name(id="foo", ctx=ast.Load())
     expected = ast.Name(id="bar", ctx=ast.Load())
