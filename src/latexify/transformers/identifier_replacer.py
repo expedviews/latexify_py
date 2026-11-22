@@ -8,6 +8,12 @@ from typing import cast
 
 from latexify import ast_utils
 
+# Python keywords that are also supported LaTeX math symbol names (see
+# latexify.codegen.expression_rules.MATH_SYMBOLS). These are allowed as
+# replacement values even though they are keywords, because the transformed
+# AST is only rendered to LaTeX and never compiled.
+_MATH_SYMBOL_KEYWORDS = frozenset({"lambda"})
+
 
 class IdentifierReplacer(ast.NodeTransformer):
     """NodeTransformer to replace identifier names.
@@ -33,13 +39,17 @@ class IdentifierReplacer(ast.NodeTransformer):
                 identifiers, and corresponding values are the replacements.
                 Both keys and values have to represent valid Python identifiers:
                 ^[A-Za-z_][A-Za-z0-9_]*$
+                Values may additionally be keywords that name supported LaTeX math
+                symbols (e.g., "lambda"), since the result is only rendered.
         """
         self._mapping = mapping
 
         for k, v in self._mapping.items():
             if not str.isidentifier(k) or keyword.iskeyword(k):
                 raise ValueError(f"'{k}' is not an identifier name.")
-            if not str.isidentifier(v) or keyword.iskeyword(v):
+            if not str.isidentifier(v) or (
+                keyword.iskeyword(v) and v not in _MATH_SYMBOL_KEYWORDS
+            ):
                 raise ValueError(f"'{v}' is not an identifier name.")
 
     def _replace_args(self, args: list[ast.arg]) -> list[ast.arg]:
