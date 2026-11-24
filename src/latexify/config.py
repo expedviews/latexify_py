@@ -12,6 +12,8 @@ class Config:
 
     Attributes:
         expand_functions: If set, the names of the functions to expand.
+            Defaults to ``{"pow"}``. Explicitly passing ``expand_functions``
+            replaces this default entirely.
         identifiers: If set, the mapping to replace identifier names in the
             function. Keys are the original names of the identifiers,
             and corresponding values are the replacements.
@@ -69,7 +71,7 @@ class Config:
             A new Config with default values
         """
         return Config(
-            expand_functions=None,
+            expand_functions={"pow"},
             identifiers=None,
             prefixes=None,
             reduce_assignments=False,
