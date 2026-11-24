@@ -141,3 +141,30 @@ def test_pow() -> None:
 
     latex = r"\mathrm{solve}(x, y) = x^{y}"
     integration_utils.check_function(solve, latex, expand_functions={"pow"})
+
+
+def test_pow_expanded_by_default() -> None:
+    def solve(x, y):
+        return math.pow(x, y)
+
+    latex = r"\mathrm{solve}(x, y) = x^{y}"
+    integration_utils.check_function(solve, latex)
+
+
+def test_builtin_pow_expanded_by_default() -> None:
+    def solve(x, y):
+        return pow(x, y)
+
+    latex = r"\mathrm{solve}(x, y) = x^{y}"
+    integration_utils.check_function(solve, latex)
+
+
+def test_pow_not_expanded_when_expand_functions_overridden() -> None:
+    def solve(x, y):
+        return math.pow(x, y)
+
+    latex = (
+        r"\mathrm{solve}(x, y) = "
+        r"\mathrm{math}.\mathrm{pow} \mathopen{}\left( x, y \mathclose{}\right)"
+    )
+    integration_utils.check_function(solve, latex, expand_functions={"exp"})
