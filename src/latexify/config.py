@@ -26,6 +26,8 @@ class Config:
         use_set_symbols: Whether to use set symbols or not.
         use_signature: Whether to add the function signature before the expression
             or not.
+        reorder_coefficients: Whether to move numeric coefficients to the
+            front of each product (e.g., ``a * 2`` becomes ``2 * a``).
     """
 
     expand_functions: set[str] | None
@@ -36,6 +38,7 @@ class Config:
     use_set_symbols: bool
     use_signature: bool
     escape_underscores: bool
+    reorder_coefficients: bool
 
     def merge(self, *, config: Config | None = None, **kwargs) -> Config:
         """Merge configuration based on old configuration and field values.
@@ -77,4 +80,5 @@ class Config:
             use_set_symbols=False,
             use_signature=True,
             escape_underscores=True,
+            reorder_coefficients=False,
         )
