@@ -60,6 +60,8 @@ def get_latex(
         tree = transformers.AssignmentReducer().visit(tree)
     if merged_config.expand_functions is not None:
         tree = transformers.FunctionExpander(merged_config.expand_functions).visit(tree)
+    if merged_config.reorder_coefficients:
+        tree = transformers.CoefficientReorderer().visit(tree)
 
     # Generates LaTeX.
     if style == Style.ALGORITHMIC:
